@@ -18,46 +18,104 @@
   .subtitle {
     font-size: 11px;
     color: #7d8590;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
-  .chart {
+  .badge {
+    display: inline-block;
+    background: #23863622;
+    color: #3fb950;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 6px;
+  }
+  th {
+    font-size: 11px;
+    font-weight: 500;
+    color: #7d8590;
+    text-align: left;
+    padding: 6px 12px 6px 0;
+    border-bottom: 1px solid #21262d;
+  }
+  th:first-child { width: 120px; }
+  td {
+    padding: 8px 12px 8px 0;
+    vertical-align: middle;
+    border-bottom: 1px solid #161b22;
+  }
+  .mode-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #e6edf3;
+    white-space: nowrap;
+  }
+  .mode-desc {
+    font-size: 10px;
+    color: #7d8590;
+  }
+  .bar-cell {
+    width: 100%;
     position: relative;
-    width: 580px;
-    height: 200px;
-    border-left: 1px solid #30363d;
-    border-bottom: 1px solid #30363d;
-    margin-left: 40px;
   }
-  .grid-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    border-top: 1px solid #21262d;
+  .bar-track {
+    position: relative;
+    height: 20px;
+    border-radius: 4px;
+    overflow: visible;
   }
-  .y-label {
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    position: relative;
+  }
+  .bar-value {
     position: absolute;
-    left: -44px;
-    font-size: 10px;
-    color: #7d8590;
+    right: -40px;
+    top: 50%;
     transform: translateY(-50%);
-    text-align: right;
-    width: 38px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e6edf3;
+    white-space: nowrap;
   }
-  .x-label {
+  .bar-fill.p99 { background: #58a6ff33; }
+  .bar-fill.p95 { background: #58a6ff77; }
+  .bar-fill.p50 { background: #58a6ff; }
+  .bar-stack {
+    position: relative;
+    height: 20px;
+  }
+  .bar-layer {
     position: absolute;
-    bottom: -18px;
-    font-size: 10px;
-    color: #7d8590;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 4px;
   }
-  svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
-  .bar-group { cursor: default; }
-  .bar-group rect { rx: 3; ry: 3; }
+  .val-col {
+    font-size: 11px;
+    color: #7d8590;
+    text-align: right;
+    padding: 8px 0 8px 8px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid #161b22;
+  }
+  .val-col strong {
+    color: #e6edf3;
+    font-weight: 600;
+  }
   .legend {
     display: flex;
     gap: 16px;
-    margin-top: 24px;
-    margin-left: 40px;
+    margin-top: 14px;
   }
   .legend-item {
     display: flex;
@@ -67,99 +125,95 @@
     color: #7d8590;
   }
   .legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-  .badge {
-    display: inline-block;
-    background: #1f6feb22;
-    color: #58a6ff;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-left: 8px;
-    vertical-align: middle;
-  }
-  .threshold-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    border-top: 1px dashed #f8514966;
-  }
-  .threshold-label {
-    position: absolute;
-    right: 4px;
-    font-size: 9px;
-    color: #f85149;
-    transform: translateY(-100%);
-    margin-top: -2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
   }
 </style>
 </head>
 <body>
-  <div class="title">keybench <span class="badge">p99 &lt; 5ms PASS</span></div>
-  <div class="subtitle">Keystroke-to-render latency (us) &middot; 1,000 iterations &middot; headless</div>
+  <div class="title">keybench <span class="badge">PASS</span></div>
+  <div class="subtitle">Keystroke-to-render latency &middot; 1,000 iterations each &middot; headless</div>
 
-  <div class="chart">
-    <!-- Y grid lines & labels -->
-    <div class="grid-line" style="bottom: 100%"></div>
-    <div class="y-label" style="bottom: 100%">50us</div>
-
-    <div class="grid-line" style="bottom: 80%"></div>
-    <div class="y-label" style="bottom: 80%">40us</div>
-
-    <div class="grid-line" style="bottom: 60%"></div>
-    <div class="y-label" style="bottom: 60%">30us</div>
-
-    <div class="grid-line" style="bottom: 40%"></div>
-    <div class="y-label" style="bottom: 40%">20us</div>
-
-    <div class="grid-line" style="bottom: 20%"></div>
-    <div class="y-label" style="bottom: 20%">10us</div>
-
-    <!-- X labels -->
-    <div class="x-label" style="left: 12.5%">Full Walk</div>
-    <div class="x-label" style="left: 37.5%">Mutation</div>
-    <div class="x-label" style="left: 62.5%">Backspace</div>
-    <div class="x-label" style="left: 87.5%">Under Load</div>
-
-    <svg viewBox="0 0 580 200" preserveAspectRatio="none">
+  <table>
+    <thead>
+      <tr>
+        <th>Render mode</th>
+        <th>Latency distribution</th>
+        <th style="text-align:right; width:100px">p50 / p99</th>
+      </tr>
+    </thead>
+    <tbody>
       <!-- Full Walk: p50=9.5, p95=19.2, p99=28 -->
-      <g class="bar-group" transform="translate(36, 0)">
-        <rect x="0" y="88"  width="28" height="112" fill="#3fb95044"/>
-        <rect x="30" y="123" width="28" height="77"  fill="#3fb950"/>
-        <rect x="60" y="162" width="28" height="38"  fill="#3fb950bb"/>
-      </g>
+      <tr>
+        <td>
+          <div class="mode-name">Full Walk</div>
+          <div class="mode-desc">entire tree</div>
+        </td>
+        <td class="bar-cell">
+          <div class="bar-stack">
+            <div class="bar-layer" style="width: 44%; background: #58a6ff22; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 30%; background: #58a6ff55; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 15%; background: #58a6ff; border-radius: 4px;"></div>
+          </div>
+        </td>
+        <td class="val-col"><strong>10us</strong> / 28us</td>
+      </tr>
 
       <!-- Mutation: p50=6.6, p95=13.9, p99=37.4 -->
-      <g class="bar-group" transform="translate(181, 0)">
-        <rect x="0" y="50"  width="28" height="150" fill="#58a6ff44"/>
-        <rect x="30" y="144" width="28" height="56"  fill="#58a6ff"/>
-        <rect x="60" y="174" width="28" height="26"  fill="#58a6ffbb"/>
-      </g>
+      <tr>
+        <td>
+          <div class="mode-name">Mutation</div>
+          <div class="mode-desc">single node</div>
+        </td>
+        <td class="bar-cell">
+          <div class="bar-stack">
+            <div class="bar-layer" style="width: 58%; background: #3fb95022; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 22%; background: #3fb95055; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 10%; background: #3fb950; border-radius: 4px;"></div>
+          </div>
+        </td>
+        <td class="val-col"><strong>7us</strong> / 37us</td>
+      </tr>
 
       <!-- Backspace: p50=11.2, p95=21.3, p99=46.7 -->
-      <g class="bar-group" transform="translate(326, 0)">
-        <rect x="0" y="63"  width="28" height="137" fill="#d2a8ff44"/>
-        <rect x="30" y="115" width="28" height="85"  fill="#d2a8ff"/>
-        <rect x="60" y="155" width="28" height="45"  fill="#d2a8ffbb"/>
-      </g>
+      <tr>
+        <td>
+          <div class="mode-name">Backspace</div>
+          <div class="mode-desc">delete + re-render</div>
+        </td>
+        <td class="bar-cell">
+          <div class="bar-stack">
+            <div class="bar-layer" style="width: 73%; background: #d2a8ff22; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 33%; background: #d2a8ff55; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 17%; background: #d2a8ff; border-radius: 4px;"></div>
+          </div>
+        </td>
+        <td class="val-col"><strong>11us</strong> / 47us</td>
+      </tr>
 
       <!-- Under Load: p50=11.6, p95=20.5, p99=63 -->
-      <g class="bar-group" transform="translate(471, 0)">
-        <rect x="0" y="0"   width="28" height="200" fill="#f0883e44"/>
-        <rect x="30" y="118" width="28" height="82"  fill="#f0883e"/>
-        <rect x="60" y="154" width="28" height="46"  fill="#f0883ebb"/>
-      </g>
-    </svg>
-  </div>
+      <tr>
+        <td>
+          <div class="mode-name">Under Load</div>
+          <div class="mode-desc">keystroke + streaming</div>
+        </td>
+        <td class="bar-cell">
+          <div class="bar-stack">
+            <div class="bar-layer" style="width: 98%; background: #f0883e22; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 32%; background: #f0883e55; border-radius: 4px;"></div>
+            <div class="bar-layer" style="width: 18%; background: #f0883e; border-radius: 4px;"></div>
+          </div>
+        </td>
+        <td class="val-col"><strong>12us</strong> / 63us</td>
+      </tr>
+    </tbody>
+  </table>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background: #58a6ff"></div> p50</div>
-    <div class="legend-item"><div class="legend-dot" style="background: #58a6ffbb"></div> p95</div>
-    <div class="legend-item"><div class="legend-dot" style="background: #58a6ff44"></div> p99</div>
+    <div class="legend-item"><div class="legend-dot" style="background: currentColor; opacity: 1"></div> p50 (median)</div>
+    <div class="legend-item"><div class="legend-dot" style="background: currentColor; opacity: 0.35"></div> p95</div>
+    <div class="legend-item"><div class="legend-dot" style="background: currentColor; opacity: 0.15"></div> p99 (worst)</div>
   </div>
 </body>
 </html>

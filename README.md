@@ -6,6 +6,10 @@
   <br>
   <code>$state</code>, <code>$derived</code>, <code>$effect</code> — but the output is ANSI, not DOM.
   <br><br>
+  <a href="https://www.npmjs.com/package/toner"><img src="https://img.shields.io/npm/v/toner?color=58a6ff&labelColor=1e1e1e" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3fb950?labelColor=1e1e1e" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/tests-119%20passing-3fb950?labelColor=1e1e1e" alt="119 tests passing">
+  <br><br>
   <img src=".readme/hero.png" alt="toner demo" width="600">
   <br><br>
 </div>
