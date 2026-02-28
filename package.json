@@ -1,0 +1,46 @@
+{
+  "name": "toner",
+  "version": "0.0.1",
+  "description": "Svelte for interactive command-line apps",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./dom-proxy/globals": "./src/dom-proxy/globals.ts",
+    "./render": "./src/render.ts",
+    "./render-loop": "./src/render-loop.ts",
+    "./renderer": "./src/renderer.ts",
+    "./input/stdin": "./src/input/stdin.ts",
+    "./components/*": "./src/components/*",
+    "./highlight": "./src/highlight.ts",
+    "./focus": "./src/focus.ts",
+    "./debug": "./src/debug.ts"
+  },
+  "scripts": {
+    "dev": "bun run examples/demo.ts",
+    "build": "echo 'TODO'",
+    "test": "bun test",
+    "bench": "bun run bench/keybench.ts",
+    "bench:ci": "bun run bench/keybench.ts --max-p99 5000",
+    "bench:json": "bun run bench/keybench.ts --json --max-p99 5000",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "format": "prettier --write 'src/**/*.svelte'",
+    "format:check": "prettier --check 'src/**/*.svelte'",
+    "check": "bun run lint && bun run format:check && bun run test"
+  },
+  "dependencies": {
+    "svelte": "^5.0.0",
+    "yoga-layout": "^3.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.2",
+    "@types/bun": "latest",
+    "prettier": "^3.8.1",
+    "prettier-plugin-svelte": "^3.4.1",
+    "svelte-check": "^4.4.0",
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT"
+}
