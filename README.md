@@ -187,12 +187,14 @@ loop.stop();
 
 ## Benchmarks
 
-```
-Keystroke p50    3–10us
-Keystroke p99    25–50us
-Full render      ~310us
-Cached render    ~43us
-```
+<img src=".readme/keybench.png" alt="toner keybench — keystroke p50 3-10us, p99 25-50us, full render 310us, cached render 43us" width="600">
+
+| Metric | Result |
+|--------|--------|
+| Keystroke p50 | 3–10us |
+| Keystroke p99 | 25–50us |
+| Full render | ~310us |
+| Cached render | ~43us |
 
 119 tests. Every commit must pass p99 < 5ms.
 
