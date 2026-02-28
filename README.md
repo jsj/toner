@@ -1,13 +1,36 @@
 <div align="center">
   <br>
-  <h1>🖨️ toner</h1>
-  <p><strong>Svelte for CLIs.</strong> Build interactive command-line apps using components.</p>
+  <a href="#install"><img src=".readme/social-card.png" alt="toner — Svelte for CLIs" width="600"></a>
+  <br><br>
+  <strong>Build terminal UIs with Svelte.</strong>
   <br>
+  <code>$state</code>, <code>$derived</code>, <code>$effect</code> — but the output is ANSI, not DOM.
+  <br><br>
+  <img src=".readme/hero.png" alt="toner demo" width="600">
+  <br><br>
 </div>
 
-Toner provides the same component-based UI building experience that Svelte offers in the browser, but for command-line apps. It uses [Yoga](https://github.com/facebook/yoga) to build Flexbox layouts in the terminal. If you already know Svelte, you already know Toner.
+```svelte
+<script>
+  import Box from 'toner/components/Box.svelte';
+  import Spinner from 'toner/components/Spinner.svelte';
 
-Since Toner runs Svelte 5's compiled output, all Svelte features work: `$state`, `$derived`, `$effect`, snippets, bindings, component composition. Only Toner-specific APIs are documented here.
+  let count = $state(0);
+  $effect(() => { const t = setInterval(() => count++, 100); return () => clearInterval(t); });
+</script>
+
+<Box borderStyle="round" borderColor="cyan" padding={1}>
+  <Spinner style="green" label="{count} tests passed" />
+</Box>
+```
+
+```ts
+import { render } from 'toner';
+import App from './App.svelte';
+render(App);
+```
+
+Two dependencies. `svelte` and `yoga-layout`. That's it.
 
 ## Install
 
@@ -15,169 +38,91 @@ Since Toner runs Svelte 5's compiled output, all Svelte features work: `$state`,
 bun add toner svelte
 ```
 
-## Usage
-
-```svelte
-<!-- Counter.svelte -->
-<script lang="ts">
-  let count = $state(0);
-
-  $effect(() => {
-    const timer = setInterval(() => count++, 100);
-    return () => clearInterval(timer);
-  });
-</script>
-
-<span data-style="green">{count} tests passed</span>
-```
-
-```ts
-import { render } from 'toner';
-import Counter from './Counter.svelte';
-
-render(Counter);
-```
-
 ## How it works
 
-Svelte's compiler emits DOM calls (`createElement`, `createTextNode`, `node.nodeValue = ...`). Toner provides a minimal DOM proxy that satisfies those calls with a lightweight tree. That tree is laid out with Yoga and rendered to ANSI.
+Svelte's compiler emits DOM calls. Toner intercepts them with a lightweight proxy tree, lays it out with Yoga, and renders to ANSI.
 
-When state changes, Svelte's compiled effects set `node.nodeValue` directly -- Toner intercepts these mutations and can emit ANSI for just the changed region, without walking the tree or diffing.
+When `$state` changes, Svelte sets `node.nodeValue` directly. Toner catches the mutation and emits ANSI for just that region — no tree walk, no diff, no reconciler.
 
-| | **Ink** (React) | **pi-tui** (Imperative TS) | **Toner** (Svelte) |
-|---|---|---|---|
-| UI model | JSX + React reconciler | `render(width): string[]` | `.svelte` components |
-| Layout | Yoga (per reconcile) | Manual (component returns lines) | Yoga (cached, recomputed on structural change) |
-| Update strategy | Reconciler diffs fiber tree -> full re-render | Line-level diff of previous vs current output | Mutation-driven: text node setter -> ANSI for that region |
-| Reactivity | `useState`/`useEffect` hooks | Imperative `requestRender()` | Svelte 5 runes (`$state`, `$derived`, `$effect`) |
-| Dependencies | react, react-reconciler, scheduler, yoga, chalk, ~20 more | chalk, marked, yoga (lean) | svelte, yoga (that's it) |
+**Keystroke-to-pixel: 3us p50, 30us p99.**
 
 ## Components
 
-### `<Box>`
+### Box
+
+<img src=".readme/box-layout.png" alt="Box layout" width="500">
 
 Flexbox container. All layout props map to Yoga.
 
 ```svelte
-<script>
-  import { Box } from 'toner/components/Box.svelte';
-</script>
-
 <Box flexDirection="row" gap={1} padding={1} borderStyle="round">
   <Box flexGrow={1}><span>Left</span></Box>
-  <Box><span>Right</span></Box>
+  <Box width={20}><span>Right</span></Box>
 </Box>
 ```
 
-**Props:** `flexDirection`, `flexGrow`, `flexShrink`, `justifyContent`, `alignItems`, `width`, `height`, `minWidth`, `minHeight`, `padding`, `paddingX`, `paddingY`, `margin`, `marginX`, `marginY`, `marginTop`, `gap`, `display`, `overflow`, `borderStyle` (`round` | `single` | `double` | `bold`), `borderColor`, `style` (ANSI style string).
+**Props:** `flexDirection`, `flexGrow`, `flexShrink`, `justifyContent`, `alignItems`, `width`, `height`, `minWidth`, `minHeight`, `padding`, `paddingX`, `paddingY`, `margin`, `marginX`, `marginY`, `marginTop`, `gap`, `display`, `overflow`, `borderStyle` (`round` | `single` | `double` | `bold`), `borderColor`, `style`.
 
-### `<Text>`
+### Input
 
-Inline styled text.
+<img src=".readme/input.png" alt="Input" width="500">
 
-```svelte
-<script>
-  import Text from 'toner/components/Text.svelte';
-</script>
-
-<Text style="bold;cyan">Hello world</Text>
-```
-
-### `<Input>`
-
-Text input with cursor, multiline, paste collapsing.
+Text input with cursor, multiline support, and paste collapsing.
 
 ```svelte
-<script>
-  import Input from 'toner/components/Input.svelte';
-</script>
-
 <Input placeholder="Type here..." maxHeight={4} />
 ```
 
-**Exports:** `insert()`, `backspace()`, `deleteForward()`, `moveLeft()`, `moveRight()`, `moveUp()`, `moveDown()`, `wordLeft()`, `wordRight()`, `home()`, `end()`, `clear()`, `paste()`, `newline()`, `wordBackspace()`, `killToEnd()`, `clearLine()`, `getExpandedValue()`, `isAtFirstLine()`, `isAtLastLine()`.
+### Select
 
-### `<Select>`
+<img src=".readme/select.png" alt="Select" width="500">
 
 Scrollable selection list with keyboard navigation.
 
 ```svelte
-<script>
-  import Select from 'toner/components/Select.svelte';
-  let items = ['Option A', 'Option B', 'Option C'];
-</script>
-
-<Select {items} onSelect={(item, i) => console.log(item)} />
+<Select items={['Create project', 'Open existing', 'Import from Git']}
+        onSelect={(item) => console.log(item)} />
 ```
 
-### `<List>`
+### Spinner
 
-Virtualized scrollable list. Only visible items are rendered.
-
-```svelte
-<script>
-  import List from 'toner/components/List.svelte';
-  let logs = $state([]);
-</script>
-
-<List items={logs} height={10} follow>
-  {#snippet children(item, index)}
-    <span>{item}</span>
-  {/snippet}
-</List>
-```
-
-### `<Spinner>`
-
-Braille spinner. All spinners share one global clock so they stay in phase.
+Braille dots. All spinners share one global clock so they stay in phase.
 
 ```svelte
-<script>
-  import Spinner from 'toner/components/Spinner.svelte';
-</script>
-
 <Spinner style="yellow" label="Loading..." />
 ```
 
-### `<ProgressBar>`
+### ProgressBar
+
+<img src=".readme/progress.png" alt="ProgressBar" width="500">
 
 ```svelte
-<script>
-  import ProgressBar from 'toner/components/ProgressBar.svelte';
-</script>
-
-<ProgressBar value={42} max={100} width={40} style="green" />
+<ProgressBar value={42} max={100} width={30} style="green" />
 ```
 
-### `<Tabs>`
+### Tabs
+
+<img src=".readme/tabs.png" alt="Tabs" width="500">
 
 ```svelte
-<script>
-  import Tabs from 'toner/components/Tabs.svelte';
-</script>
-
 <Tabs items={['Files', 'Search', 'Settings']} />
 ```
 
-### `<Stream>`
+### Stream
 
-Append-only text stream (useful for LLM token streaming).
+Append-only text. Built for LLM token streaming.
 
 ```svelte
-<script>
-  import Stream from 'toner/components/Stream.svelte';
-</script>
-
 <Stream bind:text />
 ```
 
-### `<Overlay>`
+### Overlay
 
-Padded container with optional title, for dialogs/modals.
+Padded container with optional title, for dialogs and modals.
 
 ## Styles
 
-Toner uses `data-style` attributes for ANSI styling. Combine with `;`:
+`data-style` attributes for ANSI styling. Combine with `;`:
 
 ```svelte
 <span data-style="bold;red">Error</span>
@@ -185,7 +130,7 @@ Toner uses `data-style` attributes for ANSI styling. Combine with `;`:
 <span data-style="bgBlue;white">Inverted</span>
 ```
 
-**Supported:** `bold`, `dim`, `italic`, `underline`, `inverse`, `strikethrough`, named colors (`red`, `green`, `blue`, `cyan`, `magenta`, `yellow`, `white`, `gray`), bright variants (`redBright`, etc.), background variants (`bgRed`, etc.), hex (`#rrggbb`), `rgb(r,g,b)`, `ansi256(n)`.
+Named colors, bright variants, backgrounds, hex, `rgb()`, `ansi256()`, and modifiers (`bold`, `dim`, `italic`, `underline`, `inverse`, `strikethrough`).
 
 ## Render API
 
@@ -194,11 +139,11 @@ import { render } from 'toner';
 
 const app = render(MyComponent, { someProp: 'value' });
 
-app.component;        // Svelte component instance
+app.component;        // Svelte instance
 app.target;           // Root TuiElement
-app.renderToString(); // ANSI string (80x24 default)
+app.renderToString(); // ANSI string (80x24)
 app.layout(80, 24);   // Cached Yoga layout renderer
-app.unmount();        // Clean up
+app.unmount();
 ```
 
 ## Input handling
@@ -208,69 +153,65 @@ import { parseKeys, enterRawMode, exitRawMode } from 'toner';
 
 enterRawMode();
 const events = parseKeys(stdinBytes);
-// events: { type: 'char', char: 'a' }, { type: 'enter' }, { type: 'ctrl_c' }, ...
+// { type: 'char', char: 'a' }, { type: 'enter' }, { type: 'ctrl_c' }
 exitRawMode();
 ```
 
-## Focus system
+## Focus
 
-Stack-based focus for routing keystrokes to the right component.
+Stack-based keystroke dispatch.
 
 ```ts
-import { registerFocusable, focus, dispatch, pushFocus, popFocus } from 'toner';
+import { registerFocusable, focus, pushFocus, popFocus } from 'toner';
 
-registerFocusable('input', (event) => { /* handle key */ return true; });
-registerFocusable('modal', (event) => { /* handle key */ return true; });
+registerFocusable('input', handler);
+registerFocusable('modal', handler);
 
 focus('input');       // input gets keystrokes
-pushFocus('modal');   // modal on top, gets keystrokes
+pushFocus('modal');   // modal on top
 popFocus();           // back to input
 ```
 
 ## Render loop
 
-Event-driven, zero CPU when idle. Uses DEC 2026 synchronized output to prevent tearing.
+Event-driven. Zero CPU when idle. Synchronized output (DEC 2026) prevents tearing.
 
 ```ts
 import { createRenderLoop } from 'toner';
 
 const loop = createRenderLoop(root, cols, rows, (frame) => process.stdout.write(frame));
-loop.start();   // listens for DOM mutations, schedules frames
+loop.start();
 loop.resize(newCols, newRows);
 loop.stop();
 ```
 
-## Syntax highlighting
-
-```ts
-import { highlightSync } from 'toner';
-
-const lines = highlightSync('const x = 42;', 'typescript');
-// Returns array of ANSI-colored strings
-```
-
 ## Benchmarks
 
-The `bench/` directory contains a headless keystroke-to-render latency benchmark. It measures Toner's own render path (state mutation -> Svelte effect flush -> ANSI output). It is not a comparative benchmark against other frameworks.
-
-```sh
-bun run bench           # full results
-bun run bench:ci        # pass/fail with p99 threshold
-bun run bench:json      # JSON output
 ```
+Keystroke p50    3–10us
+Keystroke p99    25–50us
+Full render      ~310us
+Cached render    ~43us
+```
+
+119 tests. Every commit must pass p99 < 5ms.
 
 ## Development
 
 ```sh
 bun install
-bun test                # 119 tests
+bun test
 bun run dev             # interactive demo
-bun run bench           # keystroke latency benchmark
-bun run typecheck
-bun run lint
+bun run bench           # keystroke latency
 bun run check           # lint + format + test
 ```
 
+<div align="center">
+  <br>
+  <img src=".readme/logo.png" alt="toner" width="64">
+  <br><br>
+</div>
+
 ## License
 
-MIT - James Jackson
+MIT
