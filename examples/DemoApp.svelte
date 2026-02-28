@@ -80,11 +80,8 @@
 			<span>Arrows: move cursor | Backspace: delete | Home/End | Ctrl+C: quit</span>
 		</Box>
 		<Box height={1}><span> </span></Box>
-		<Box height={1} style="yellow">
-			<span>Ink/React baseline: ~33,000-53,000us per keystroke</span>
-		</Box>
-		<Box height={1} style="green">
-			<span>Target: {'<'}5,000us (sub-5ms)</span>
+		<Box height={1} style="dim">
+			<span>toner — Svelte 5 for interactive CLIs</span>
 		</Box>
 	</Box>
 

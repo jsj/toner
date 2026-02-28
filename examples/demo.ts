@@ -108,7 +108,6 @@ try {
 		console.log(`\nToner Demo — Results`);
 		console.log(`  Keystrokes: ${stats.count}`);
 		console.log(`  Latency avg: ${stats.avg.toFixed(1)}us | p50: ${stats.p50.toFixed(1)}us | p95: ${stats.p95.toFixed(1)}us | p99: ${stats.p99.toFixed(1)}us | max: ${stats.max.toFixed(1)}us`);
-		console.log(`  Ink/React: ~33,000-53,000us | Target: <5,000us`);
-		if (stats.p99 < 5000) console.log(`  Sub-5ms p99 achieved!`);
+		if (stats.p99 < 5000) console.log(`  p99 under 5ms`);
 	}
 }

@@ -172,8 +172,8 @@ if (jsonOnly) {
 		console.log(`  result: ${results.pass ? 'PASS' : 'FAIL'} (p99: ${mt.p99}us)`);
 	}
 
-	console.log(`\n  Ink/React baseline: ~33,000-53,000us per keystroke`);
-	console.log(`  Toner target:      <5,000us (sub-5ms)\n`);
+	console.log(`\n  Note: these numbers measure Toner's own headless render path only.`);
+	console.log(`  Not a comparative benchmark against other frameworks.\n`);
 }
 
 app.unmount();
